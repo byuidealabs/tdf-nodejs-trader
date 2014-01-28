@@ -1,0 +1,24 @@
+{
+  "name": "tdf-client",
+  "version": "0.0.1",
+  "description": "NodeJS client for the Tour de Finance API.",
+  "main": "tdfClient.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jmdobry/tdf-client-nodejs.git"
+  },
+  "author": "Jason Dobry <jason.dobry@gmail.com> (http://www.pseudobry.com/)",
+  "license": "GPL v2",
+  "bugs": {
+    "url": "https://github.com/jmdobry/tdf-client-nodejs/issues"
+  },
+  "homepage": "https://github.com/jmdobry/tdf-client-nodejs",
+  "dependencies": {
+    "bluebird": "~1.0.1",
+    "mout": "~0.8.0",
+    "request": "~2.33.0"
+  }
+}
