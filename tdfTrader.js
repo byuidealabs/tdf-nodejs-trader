@@ -1,3 +1,23 @@
+/**
+ * Filename: tdfTrader.js
+ * Description: NodeJS client for the [Tour de Finance](https://github.com/byuidealabs/tdf) platform.
+ *
+ * Copyright (C) 2014 BYU Idea Labs
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 var lang = require('mout/lang'),
 	Promise = require('bluebird'),
 	request = Promise.promisify(require("request")),
@@ -190,8 +210,55 @@ module.exports = {
 		}).nodeify(cb);
 	},
 
+	/**
+	 * @doc method
+	 * @id tdfTrader.methods:currentStatus
+	 * @name currentStatues
+	 * @description
+	 * Return the current status of all securities.
+	 *
+	 * ## Signature:
+	 * ```
+	 * ```
+	 *
+	 * ## Examples:
+	 *
+	 * __Node-style:__
+	 * ```js
+	 *  tdfTrader.currentStatus(function (err, status) {
+	 *      if (err) {
+	 *          // handle error
+	 *      } else {
+	 *          console.log(typeof status); // "object"
+	 *      }
+	 *  );
+	 * ```
+	 *
+	 * __Promise-style:__
+	 * ```js
+	 *  tdfTrader.currentStatus()
+	 *      .then(function (status) {
+	 *          console.log(typeof status); // "object"
+	 *      })
+	 *      .catch(function (err) {
+	 *          // handle error
+	 *      });
+	 * ```
+	 *
+	 * @param {object=} options Configuration options. Properties:
+	 * - `{string=}` - `protocol` - HTTP protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
+	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
+	 * @param {function=} cb Optional callback for Node-style usage.
+	 * @returns {Promise}
+	 */
 	currentStatus: function (options, cb) {
 		var _this = this;
+
+		if (lang.isFunction(options)) {
+			cb = options;
+			options = {};
+		}
 
 		if (cb && !lang.isFunction(cb)) {
 			throw new TypeError(errorPrefixes.currentStatus + 'cb: Must be a function!');
@@ -238,8 +305,56 @@ module.exports = {
 		}).nodeify(cb);
 	},
 
+	/**
+	 * @doc method
+	 * @id tdfTrader.methods:allHistories
+	 * @name allHistories
+	 * @description
+	 * Retrieve all available price histories.
+	 *
+	 * ## Signature:
+	 * ```js
+	 *  tdfTrader#allHistories([options][, cb])
+	 * ```
+	 *
+	 * ## Examples:
+	 *
+	 * __Node-style:__
+	 * ```js
+	 *  tdfTrader.allHistories(function (err, histories) {
+	 *      if (err) {
+	 *          // handle error
+	 *      } else {
+	 *          console.log(typeof histories); // "array"
+	 *      }
+	 *  );
+	 * ```
+	 *
+	 * __Promise-style:__
+	 * ```js
+	 *  tdfTrader.allHistories()
+	 *      .then(function (histories) {
+	 *          console.log(typeof histories); // "array"
+	 *      })
+	 *      .catch(function (err) {
+	 *          // handle error
+	 *      });
+	 * ```
+	 *
+	 * @param {object=} options Configuration options. Properties:
+	 * - `{string=}` - `protocol` - HTTP protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
+	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
+	 * @param {function=} cb Optional callback for Node-style usage.
+	 * @returns {Promise}
+	 */
 	allHistories: function (options, cb) {
 		var _this = this;
+
+		if (lang.isFunction(options)) {
+			cb = options;
+			options = {};
+		}
 
 		if (cb && !lang.isFunction(cb)) {
 			throw new TypeError(errorPrefixes.allHistories + 'cb: Must be a function!');
