@@ -23,22 +23,100 @@ var lang = require('mout/lang'),
 	request = Promise.promisify(require("request")),
 	URL = require('url'),
 	errorPrefixes = {
-		trade: 'tdfClient.trade(securities, options, cb): ',
-		agentStatus: 'tdfClient.agentStatus(options, cb): ',
-		history: 'tdfClient.history(options, cb): ',
-		currentStatus: 'tdfClient.currentStatus(options, cb): ',
-		allHistories: 'tdfClient.allHistories(options, cb): '
+		trade: 'tdfClient.trade(securities, options[, cb]): ',
+		agentStatus: 'tdfClient.agentStatus(options[, cb]): ',
+		history: 'tdfClient.history(symbol, [options][, cb]): ',
+		securities: 'tdfClient.securities([options][, cb]): ',
+		currentStatus: 'tdfClient.currentStatus([options][, cb]): ',
+		allHistories: 'tdfClient.allHistories([options][, cb]): '
 	};
 
 'use strict';
 
 module.exports = {
+
+	/**
+	 * @doc property
+	 * @id tdfTrader.properties:defaults
+	 * @name defaults
+	 * @description
+	 * Defaults.
+	 *
+	 * Properties:
+	 * - `{string}` - `protocol` -  Protocol to use. Default: `"http"`.
+	 * - `{string}` - `hostname` -  Hostname to use. Default: `"localhost"`.
+	 * - `{number}` - `port` -  Port to use. Default: `80`.
+	 */
 	defaults: {
 		protocol: 'http',
 		hostname: 'localhost',
 		port: 80
 	},
 
+	/**
+	 * @doc method
+	 * @id tdfTrader.methods:trade
+	 * @name trade
+	 * @description
+	 * Trade the given securities.
+	 *
+	 * ## Signature:
+	 * ```js
+	 * tdfTrader#trade(securities, options[, cb])
+	 * ```
+	 *
+	 * ## Examples:
+	 *
+	 * __Node-style:__
+	 * ```js
+	 *  tdfTrader.trade([
+	 *      {
+	 *          symbol: 'GOOG',
+	 *          amount: 24 // but 24 shares of 'GOOG'
+	 *      },
+	 *      {
+	 *          symbol: 'FB',
+	 *          amount: -30 // Sell 30 shares of 'FB'
+	 *      }
+	 *  ], { agentId: '1234', apiKey: '5678' }, function (err, status) {
+	 *      if (err) {
+	 *          // handle error
+	 *      } else {
+	 *          console.log((status);
+	 *      }
+	 *  );
+	 * ```
+	 *
+	 * __Promise-style:__
+	 * ```js
+	 *  tdfTrader.trade([
+	 *      {
+	 *          symbol: 'GOOG',
+	 *          amount: 24 // but 24 shares of 'GOOG'
+	 *      },
+	 *      {
+	 *          symbol: 'FB',
+	 *          amount: -30 // Sell 30 shares of 'FB'
+	 *      }
+	 *  ], { agentId: '1234', apiKey: '5678' })
+	 *      .then(function (status) {
+	 *          console.log(status);
+	 *      })
+	 *      .catch(function (err) {
+	 *          // handle error
+	 *      });
+	 * ```
+	 *
+	 * @param {array} securities Array of securities to trade.
+	 * @param {object} options Configuration options. Properties:
+	 * - `{string}` - `agentId` - The id of the agent for which to retrieve the status.
+	 * - `{string}` - `apiKey` - The API key of the agent's owner.
+	 * - `{string=}` - `protocol` - Protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
+	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
+	 * @param {function=} cb Optional callback for Node-style usage.
+	 * @returns {Promise}
+	 */
 	trade: function (securities, options, cb) {
 		var _this = this;
 
@@ -109,6 +187,51 @@ module.exports = {
 		}).nodeify(cb);
 	},
 
+	/**
+	 * @doc method
+	 * @id tdfTrader.methods:agentStatus
+	 * @name agentStatus
+	 * @description
+	 * Return the status of the agent with the given agent id.
+	 *
+	 * ## Signature:
+	 * ```js
+	 * tdfTrader#agentStatus(options[, cb])
+	 * ```
+	 *
+	 * ## Examples:
+	 *
+	 * __Node-style:__
+	 * ```js
+	 *  tdfTrader.agentStatus({ agentId: '1234', apiKey: '5678' }, function (err, status) {
+	 *      if (err) {
+	 *          // handle error
+	 *      } else {
+	 *          console.log((status);
+	 *      }
+	 *  );
+	 * ```
+	 *
+	 * __Promise-style:__
+	 * ```js
+	 *  tdfTrader.agentStatus({ agentId: '1234', apiKey: '5678' })
+	 *      .then(function (status) {
+	 *          console.log(status);
+	 *      })
+	 *      .catch(function (err) {
+	 *          // handle error
+	 *      });
+	 * ```
+	 *
+	 * @param {object} options Configuration options. Properties:
+	 * - `{string}` - `agentId` - The id of the agent for which to retrieve the status.
+	 * - `{string}` - `apiKey` - The API key of the agent's owner.
+	 * - `{string=}` - `protocol` - Protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
+	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
+	 * @param {function=} cb Optional callback for Node-style usage.
+	 * @returns {Promise}
+	 */
 	agentStatus: function (options, cb) {
 		var _this = this;
 
@@ -162,25 +285,73 @@ module.exports = {
 		}).nodeify(cb);
 	},
 
-	history: function (options, cb) {
+	/**
+	 * @doc method
+	 * @id tdfTrader.methods:securities
+	 * @name securities
+	 * @description
+	 * Return the list of available securities.
+	 *
+	 * ## Signature:
+	 * ```js
+	 * tdfTrader#securities([options][, cb])
+	 * ```
+	 *
+	 * ## Examples:
+	 *
+	 * __Node-style:__
+	 * ```js
+	 *  tdfTrader.securities(function (err, securities) {
+	 *      if (err) {
+	 *          // handle error
+	 *      } else {
+	 *          console.log(securities.length); // 500
+	 *      }
+	 *  );
+	 * ```
+	 *
+	 * __Promise-style:__
+	 * ```js
+	 *  tdfTrader.securities()
+	 *      .then(function (securities) {
+	 *          console.log(securities.length); // 500
+	 *      })
+	 *      .catch(function (err) {
+	 *          // handle error
+	 *      });
+	 * ```
+	 *
+	 * @param {object=} options Configuration options. Properties:
+	 * - `{string=}` - `protocol` - Protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
+	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
+	 * @param {function=} cb Optional callback for Node-style usage.
+	 * @returns {Promise}
+	 */
+	securities: function (options, cb) {
 		var _this = this;
 
+		options = options || {};
+
+		if (lang.isFunction(options)) {
+			cb = options;
+			options = {};
+		}
+
 		if (cb && !lang.isFunction(cb)) {
-			throw new TypeError(errorPrefixes.history + 'cb: Must be a function!');
+			throw new TypeError(errorPrefixes.securities + 'cb: Must be a function!');
 		}
 
 		return Promise.resolve().then(function () {
 			if (!lang.isObject(options)) {
 				throw new TypeError(errorPrefixes.history + 'options: Must be an object!');
-			} else if (options.symbol && !lang.isString(options.symbol)) {
-				throw new TypeError(errorPrefixes.history + 'options.symbol: Must be a string!');
 			}
 
 			var url = URL.format({
 				protocol: options.protocol || _this.defaults.protocol,
 				hostname: options.hostname || _this.defaults.hostname,
 				port: options.port || _this.defaults.port,
-				pathname: options.symbol ? URL.resolve('/history/', options.symbol) : '/history'
+				pathname: '/history'
 			});
 
 			return request({
@@ -190,22 +361,109 @@ module.exports = {
 					var response = result[0],
 						body = result[1];
 
-					if (body.indexOf('Not authorized to operate on agent.') !== -1) {
-						throw new Error('Unauthorized. Invalid apiKey.')
-					} else if (body.indexOf('Failed to load agent') !== -1) {
-						throw new Error('Failed to load agent ' + options.agentId + '. Agent not found.')
-					} else {
-						var json;
-						try {
-							json = JSON.parse(body);
-						} catch (err) {
-							throw new Error('Failed to parse TDF server response!');
-						}
-						if (json.error) {
-							throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
-						}
-						return json;
+					var json;
+					try {
+						json = JSON.parse(body);
+					} catch (err) {
+						throw new Error('Failed to parse TDF server response!');
 					}
+					if (json.error) {
+						throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
+					}
+					return json;
+				});
+		}).nodeify(cb);
+	},
+
+	/**
+	 * @doc method
+	 * @id tdfTrader.methods:history
+	 * @name history
+	 * @description
+	 * Return the history for a single security.
+	 *
+	 * ## Signature:
+	 * ```
+	 * tdfTrader#history(symbol[, options][, cb])
+	 * ```
+	 *
+	 * ## Examples:
+	 *
+	 * __Node-style:__
+	 * ```js
+	 *  tdfTrader.history('GOOG', function (err, history) {
+	 *      if (err) {
+	 *          // handle error
+	 *      } else {
+	 *          console.log(history);
+	 *      }
+	 *  );
+	 * ```
+	 *
+	 * __Promise-style:__
+	 * ```js
+	 *  tdfTrader.history('GOOG')
+	 *      .then(function (history) {
+	 *          console.log(history);
+	 *      })
+	 *      .catch(function (err) {
+	 *          // handle error
+	 *      });
+	 * ```
+	 *
+	 * @param {string} symbol The symbol of the security for which to retrieve the history.
+	 * @param {object=} options Configuration options. Properties:
+	 * - `{string=}` - `protocol` - Protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
+	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
+	 * @param {function=} cb Optional callback for Node-style usage.
+	 * @returns {Promise}
+	 */
+	history: function (symbol, options, cb) {
+		var _this = this;
+
+		options = options || {};
+
+		if (lang.isFunction(options)) {
+			cb = options;
+			options = {};
+		}
+
+		if (cb && !lang.isFunction(cb)) {
+			throw new TypeError(errorPrefixes.history + 'cb: Must be a function!');
+		}
+
+		return Promise.resolve().then(function () {
+			if (!lang.isObject(options)) {
+				throw new TypeError(errorPrefixes.history + 'options: Must be an object!');
+			} else if (!lang.isString(symbol)) {
+				throw new TypeError(errorPrefixes.history + 'symbol: Must be a string!');
+			}
+
+			var url = URL.format({
+				protocol: options.protocol || _this.defaults.protocol,
+				hostname: options.hostname || _this.defaults.hostname,
+				port: options.port || _this.defaults.port,
+				pathname: URL.resolve('/history/', options.symbol)
+			});
+
+			return request({
+				method: 'GET',
+				url: url
+			}).then(function (result) {
+					var response = result[0],
+						body = result[1];
+
+					var json;
+					try {
+						json = JSON.parse(body);
+					} catch (err) {
+						throw new Error('Failed to parse TDF server response!');
+					}
+					if (json.error) {
+						throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
+					}
+					return json;
 				});
 		}).nodeify(cb);
 	},
@@ -246,7 +504,7 @@ module.exports = {
 	 * ```
 	 *
 	 * @param {object=} options Configuration options. Properties:
-	 * - `{string=}` - `protocol` - HTTP protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `protocol` - Protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
 	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
 	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
 	 * @param {function=} cb Optional callback for Node-style usage.
@@ -254,6 +512,8 @@ module.exports = {
 	 */
 	currentStatus: function (options, cb) {
 		var _this = this;
+
+		options = options || {};
 
 		if (lang.isFunction(options)) {
 			cb = options;
@@ -285,22 +545,16 @@ module.exports = {
 					var response = result[0],
 						body = result[1];
 
-					if (body.indexOf('Not authorized to operate on agent.') !== -1) {
-						throw new Error('Unauthorized. Invalid apiKey.')
-					} else if (body.indexOf('Failed to load agent') !== -1) {
-						throw new Error('Failed to load agent ' + options.agentId + '. Agent not found.')
-					} else {
-						var json;
-						try {
-							json = JSON.parse(body);
-						} catch (err) {
-							throw new Error('Failed to parse TDF server response!');
-						}
-						if (json.error) {
-							throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
-						}
-						return json;
+					var json;
+					try {
+						json = JSON.parse(body);
+					} catch (err) {
+						throw new Error('Failed to parse TDF server response!');
 					}
+					if (json.error) {
+						throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
+					}
+					return json;
 				});
 		}).nodeify(cb);
 	},
@@ -342,7 +596,7 @@ module.exports = {
 	 * ```
 	 *
 	 * @param {object=} options Configuration options. Properties:
-	 * - `{string=}` - `protocol` - HTTP protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
+	 * - `{string=}` - `protocol` - Protocol to use. Default: `tdfTrader#defaults.protocol || "http"`.
 	 * - `{string=}` - `hostname` - Hostname of TDF platform to use. Default: `tdfTrader#defaults.hostname || "localhost"`.
 	 * - `{string=}` - `port` - Port of TDF platform to use. Default: `tdfTrader#defaults.port || 80`.
 	 * @param {function=} cb Optional callback for Node-style usage.
@@ -350,6 +604,8 @@ module.exports = {
 	 */
 	allHistories: function (options, cb) {
 		var _this = this;
+
+		options = options || {};
 
 		if (lang.isFunction(options)) {
 			cb = options;
@@ -381,22 +637,16 @@ module.exports = {
 					var response = result[0],
 						body = result[1];
 
-					if (body.indexOf('Not authorized to operate on agent.') !== -1) {
-						throw new Error('Unauthorized. Invalid apiKey.')
-					} else if (body.indexOf('Failed to load agent') !== -1) {
-						throw new Error('Failed to load agent ' + options.agentId + '. Agent not found.')
-					} else {
-						var json;
-						try {
-							json = JSON.parse(body);
-						} catch (err) {
-							throw new Error('Failed to parse TDF server response!');
-						}
-						if (json.error) {
-							throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
-						}
-						return json;
+					var json;
+					try {
+						json = JSON.parse(body);
+					} catch (err) {
+						throw new Error('Failed to parse TDF server response!');
 					}
+					if (json.error) {
+						throw new Error('code: ' + json.error.code + '. message: ' + json.error.message);
+					}
+					return json;
 				});
 		}).nodeify(cb);
 	}
