@@ -444,7 +444,7 @@ module.exports = {
 				protocol: options.protocol || _this.defaults.protocol,
 				hostname: options.hostname || _this.defaults.hostname,
 				port: options.port || _this.defaults.port,
-				pathname: URL.resolve('/history/', options.symbol)
+				pathname: URL.resolve('/history/', symbol)
 			});
 
 			return request({
