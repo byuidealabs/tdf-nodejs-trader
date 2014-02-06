@@ -621,6 +621,12 @@ module.exports = {
 				throw new TypeError(errorPrefixes.allHistories + 'options: Must be an object!');
 			} else if (options.symbol && !lang.isString(options.symbol)) {
 				throw new TypeError(errorPrefixes.allHistories + 'options.symbol: Must be a string!');
+			} else if (options.select && !lang.isString(options.select)) {
+				throw new TypeError(errorPrefixes.allHistories + 'options.select: Must be a string!');
+			} else if (options.select && options.select !== 'all' && options.select !== 'bid' && options.select !== 'ask' && options.select !== 'last') {
+				throw new TypeError(errorPrefixes.allHistories + 'options.select: Must be "all", "bid", "ask" or "last"!');
+			} else if (options.n && !lang.isNumber(options.n)) {
+				throw new TypeError(errorPrefixes.allHistories + 'options.n: Must be a number!');
 			}
 
 			var url = URL.format({
@@ -630,9 +636,15 @@ module.exports = {
 				pathname: '/allhistories'
 			});
 
+			var qs = {
+				select: options.select || 'all',
+				n: options.n || 12
+			};
+
 			return request({
 				method: 'GET',
-				url: url
+				url: url,
+				qs: qs
 			}).then(function (result) {
 					var response = result[0],
 						body = result[1];
