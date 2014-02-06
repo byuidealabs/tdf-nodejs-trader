@@ -529,6 +529,10 @@ module.exports = {
 				throw new TypeError(errorPrefixes.currentStatus + 'options: Must be an object!');
 			} else if (options.symbol && !lang.isString(options.symbol)) {
 				throw new TypeError(errorPrefixes.currentStatus + 'options.symbol: Must be a string!');
+			} else if (options.select && !lang.isString(options.select)) {
+				throw new TypeError(errorPrefixes.currentStatus + 'options.select: Must be a string!');
+			} else if (options.select && options.select !== 'all' && options.select !== 'bid' && options.select !== 'ask' && options.select !== 'last') {
+				throw new TypeError(errorPrefixes.currentStatus + 'options.select: Must be "all", "bid", "ask" or "last"!');
 			}
 
 			var url = URL.format({
@@ -538,9 +542,14 @@ module.exports = {
 				pathname: '/currentstatus'
 			});
 
+			var qs = {
+				select: options.select || 'all'
+			};
+
 			return request({
 				method: 'GET',
-				url: url
+				url: url,
+				qs: qs
 			}).then(function (result) {
 					var response = result[0],
 						body = result[1];
